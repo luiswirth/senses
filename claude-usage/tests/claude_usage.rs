@@ -17,7 +17,8 @@ fn usage(session: u32, weekly: u32) -> Usage {
 
 #[test]
 fn a_limit_is_told_as_it_crosses_a_tenth_either_way() {
-  let zone = TimeZone::get("Europe/Zurich").unwrap();
+  // A POSIX zone, since a build sandbox has no time zone database.
+  let zone = TimeZone::posix("CET-1CEST,M3.5.0,M10.5.0/3").unwrap();
   let mut told = BTreeMap::new();
   assert_eq!(
     tell(&mut told, &usage(11, 26), &zone),
