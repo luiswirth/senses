@@ -43,16 +43,23 @@
         programs.just.enable = true;
       });
 
-    packages = forEachSystem (pkgs: rec {
-      claude-usage = pkgs.rustPlatform.buildRustPackage {
-        pname = "claude-usage";
-        inherit ((pkgs.lib.importTOML ./Cargo.toml).workspace.package) version;
-        src = ./.;
-        cargoLock.lockFile = ./Cargo.lock;
-        cargoBuildFlags = ["-p" "claude-usage"];
-        meta.mainProgram = "claude-usage";
-      };
-      default = claude-usage;
+    packages = forEachSystem (pkgs: let
+      sense = name:
+        pkgs.rustPlatform.buildRustPackage {
+          pname = name;
+          inherit ((pkgs.lib.importTOML ./Cargo.toml).workspace.package) version;
+          src = ./.;
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+            allowBuiltinFetchGit = true;
+          };
+          cargoBuildFlags = ["-p" name];
+          cargoTestFlags = ["-p" name];
+          meta.mainProgram = name;
+        };
+    in {
+      claude-usage = sense "claude-usage";
+      clock = sense "clock";
     });
 
     devShells = forEachSystem (pkgs: {

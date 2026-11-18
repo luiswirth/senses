@@ -1,6 +1,6 @@
-use std::{collections::BTreeMap, fs};
+use std::collections::BTreeMap;
 
-use claude_usage::{Usage, create, deliver, tell};
+use claude_usage::{Usage, tell};
 use jiff::tz::TimeZone;
 
 /// The endpoint's answer, as it came on 2026-11-16, with the fields the sense ignores left out.
@@ -46,16 +46,4 @@ fn a_limit_of_a_model_is_named_by_it() {
     tell(&mut told, &usage, &zone),
     "Your Claude subscription's weekly limit for Fable is 55% used, and resets Sat 21 Nov 20:00 UTC.\n"
   );
-}
-
-#[test]
-fn an_item_is_delivered_whole_into_new() {
-  let inbox = std::env::temp_dir().join(format!("claude-usage-{}", std::process::id()));
-  create(&inbox).unwrap();
-  let item = deliver(&inbox, "text\n").unwrap();
-  assert_eq!(item.parent().unwrap(), inbox.join("new"));
-  assert!(item.to_str().unwrap().ends_with(".claude-usage.txt"));
-  assert_eq!(fs::read_to_string(&item).unwrap(), "text\n");
-  assert_eq!(fs::read_dir(inbox.join("tmp")).unwrap().count(), 0);
-  fs::remove_dir_all(&inbox).unwrap();
 }

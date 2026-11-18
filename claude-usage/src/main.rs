@@ -1,6 +1,6 @@
 //! `claude-usage`: tells the agent of `AGENT_INBOX` how much of its Claude subscription's usage
 //! limits is used, as a quiet item, where a limit crossed a tenth since it was last told, either
-//! way. A harness runs it at each step: it asks the endpoint at most once in `FRESH`, and does
+//! way. Its inbox's take runs it at each step: it asks the endpoint at most once in `FRESH`, and does
 //! nothing without `AGENT_INBOX` or a Claude Code login.
 
 use std::{
@@ -13,7 +13,8 @@ use std::{
   process::ExitCode,
 };
 
-use claude_usage::{FRESH, SENDER, State, ask, create, deliver, tell, token};
+use agentinbox::Inbox;
+use claude_usage::{FRESH, SENDER, State, ask, tell, token};
 use jiff::{Timestamp, tz::TimeZone};
 
 fn main() -> ExitCode {
@@ -31,17 +32,17 @@ fn main() -> ExitCode {
 }
 
 fn run() -> Result<(), Box<dyn Error>> {
-  let Some(inbox) = env::var_os("AGENT_INBOX").map(PathBuf::from) else {
+  let Some(inbox) = env::var_os("AGENT_INBOX").map(|root| Inbox::new(PathBuf::from(root))) else {
     return Ok(());
   };
-  create(&inbox)?;
+  inbox.create()?;
   let mut file = fs::OpenOptions::new()
     .read(true)
     .write(true)
     .create(true)
     .truncate(false)
     .mode(0o600)
-    .open(inbox.join(SENDER))?;
+    .open(inbox.root.join(SENDER))?;
   // A run that holds the lock is asking already, such as for a parallel tool call.
   match file.try_lock() {
     Ok(()) => {}
@@ -69,7 +70,7 @@ fn run() -> Result<(), Box<dyn Error>> {
   let usage = ask(&token)?;
   let text = tell(&mut state.told, &usage, &TimeZone::system());
   if !text.is_empty() {
-    deliver(&inbox, &text)?;
+    inbox.deliver(text.as_bytes(), SENDER, "txt")?;
   }
   save(&mut file, &state)
 }

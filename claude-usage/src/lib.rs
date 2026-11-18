@@ -1,13 +1,8 @@
 //! Tells an agent how much of its Claude subscription's usage limits is used, through its inbox.
-//!
-//! The inbox is a directory like a maildir: an item is delivered by writing it into `tmp/` and
-//! hard-linking it into `new/`, named `<time>.<sender>.<ext>`.
 
 use std::{
   collections::BTreeMap,
-  env, fs,
-  io::{self, Write},
-  os::unix::fs::{DirBuilderExt, OpenOptionsExt},
+  env, fs, io,
   path::{Path, PathBuf},
   process::{self, Command},
   time::Duration,
@@ -217,45 +212,4 @@ pub fn ask(token: &str) -> Result<Usage, ureq::Error> {
     .call()?
     .body_mut()
     .read_json()
-}
-
-/// Creates the inbox's directories, private to the user.
-pub fn create(inbox: &Path) -> io::Result<()> {
-  for dir in ["new", "cur", "tmp"] {
-    fs::DirBuilder::new()
-      .recursive(true)
-      .mode(0o700)
-      .create(inbox.join(dir))?;
-  }
-  Ok(())
-}
-
-/// Delivers `text` into the inbox, quietly, as an item from [`SENDER`].
-pub fn deliver(inbox: &Path, text: &str) -> io::Result<PathBuf> {
-  const TIME: &str = "%Y%m%dT%H%M%S.%6fZ";
-  let tmp = inbox.join("tmp").join(format!(
-    "{}.{}.{SENDER}.txt",
-    Timestamp::now().strftime(TIME),
-    process::id()
-  ));
-  let mut file = fs::OpenOptions::new()
-    .write(true)
-    .create_new(true)
-    .mode(0o600)
-    .open(&tmp)?;
-  file.write_all(text.as_bytes())?;
-  file.sync_all()?;
-  loop {
-    let new = inbox
-      .join("new")
-      .join(format!("{}.{SENDER}.txt", Timestamp::now().strftime(TIME)));
-    match fs::hard_link(&tmp, &new) {
-      Ok(()) => {
-        fs::remove_file(&tmp)?;
-        return Ok(new);
-      }
-      Err(e) if e.kind() == io::ErrorKind::AlreadyExists => continue,
-      Err(e) => return Err(e),
-    }
-  }
 }

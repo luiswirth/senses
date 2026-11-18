@@ -1,9 +1,12 @@
 [workspace]
 resolver = "3"
-members = ["claude-usage"]
+members = ["claude-usage", "clock"]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
 publish = false
 license = "MIT"
+
+[workspace.dependencies]
+agentinbox = { git = "https://github.com/luiswirth/agentinbox", default-features = false }
