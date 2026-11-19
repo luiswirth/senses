@@ -4,7 +4,7 @@ Senses: small sources that deliver what an agent perceives into its inbox, part 
 Each is its own small piece, general, so anyone can use it by default, never tied to Luis's setup.
 The domain senses.sh is Luis's, unused for now.
 
-- A sense is a reading of the agent's inbox, agentinbox (`~/dev/agentinbox`): a command its take runs at each step, listed in `agentinbox/readings` of the user's config directory, which does nothing without `AGENT_INBOX`; no harness knows a sense.
+- A sense is a reading of the agent's inbox, agentinbox (`~/dev/agentics/inbox`): a command its take runs at each step, listed in `agentinbox/readings` of the user's config directory, which does nothing without `AGENT_INBOX`; no harness knows a sense.
   It delivers through the crate `agentinbox`, without its command line.
 - A sense follows the inbox's rule for readings: it reports a change, not a clock, delivers quietly, only as a reading crosses a mark, and keeps its state, such as the mark told last, in a file of the inbox named after it.
 - Each sense is a crate of the workspace, its command named after what it senses.
