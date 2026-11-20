@@ -1,6 +1,9 @@
+---
+description: "Senses: small sources that deliver what an agent perceives into its inbox, part of Ag² (`~/dev/agentics`). Use when working on a sense or adding one."
+---
+
 # senses
 
-Senses: small sources that deliver what an agent perceives into its inbox, part of Ag² (`~/dev/agentics`).
 They are Luis's decision (2026-11-16).
 Each is its own small piece, general, so anyone can use it by default, never tied to Luis's setup.
 The domain senses.sh is Luis's, unused for now.
