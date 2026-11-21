@@ -60,6 +60,7 @@
     in {
       claude-usage = sense "claude-usage";
       clock = sense "clock";
+      others = sense "others";
     });
 
     devShells = forEachSystem (pkgs: {

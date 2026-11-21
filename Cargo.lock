@@ -11,9 +11,10 @@ checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 [[package]]
 name = "agentinbox"
 version = "0.1.0"
-source = "git+https://github.com/luiswirth/agentinbox#19968382335c22946488204e29e87d92a7d571e9"
+source = "git+https://github.com/luiswirth/agentinbox#49d21a176c0913f86670230e36fe13431ca3efe8"
 dependencies = [
  "jiff 0.2.46",
+ "libc",
  "mime2ext",
  "mime_guess",
  "notify",
@@ -653,6 +654,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 
 [[package]]
+name = "others"
+version = "0.1.0"
+dependencies = [
+ "agentinbox",
+]
+
+[[package]]
 name = "percent-encoding"
 version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1047,7 +1055,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

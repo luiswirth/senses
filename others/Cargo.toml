@@ -1,0 +1,9 @@
+[package]
+name = "others"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+
+[dependencies]
+agentinbox.workspace = true
