@@ -1,6 +1,8 @@
 //! Tells an agent the statuses of the other agents of its machine, the inboxes beside its own,
-//! as they change, so that it learns unasked who works where it does: each status set, changed
-//! or cleared since it was last told. The first look tells them all, and how to set one's own.
+//! and of its peers' agents, as they change, so that it learns unasked who works where it does:
+//! each status set, changed or cleared since it was last told. The first look tells them all,
+//! and how to set one's own. A peer is asked at most every [`PEER_AGE`], since a look is taken
+//! at every step; one out of reach keeps what it told last.
 
 use std::{
   collections::BTreeMap,
@@ -9,12 +11,17 @@ use std::{
   os::unix::fs::OpenOptionsExt,
 };
 
-use agentinbox::{Inbox, inboxes};
+use std::time::Duration;
+
+use agentinbox::{Inbox, inboxes, peers};
 
 /// Who the items are from, and the name of the sense's file in the inbox.
 pub const SENDER: &str = "others";
 
-/// The statuses of the agents beside this one, by name.
+/// How long what a peer listed is used before it is asked again.
+pub const PEER_AGE: Duration = Duration::from_secs(5 * 60);
+
+/// The statuses of the agents beside this one and of the peers' agents, by name.
 pub fn statuses(inbox: &Inbox) -> io::Result<BTreeMap<String, String>> {
   let mut statuses = BTreeMap::new();
   let Some(dir) = inbox.root.parent() else {
@@ -29,6 +36,13 @@ pub fn statuses(inbox: &Inbox) -> io::Result<BTreeMap<String, String>> {
       statuses.insert(name, status.text);
     }
   }
+  for peer in peers::peers(PEER_AGE)? {
+    for agent in peer.agents {
+      if let Some((text, _)) = agent.status {
+        statuses.insert(agent.name, text);
+      }
+    }
+  }
   Ok(statuses)
 }
 
@@ -38,11 +52,14 @@ pub fn describe(
   now: &BTreeMap<String, String>,
 ) -> Option<String> {
   let Some(told) = told else {
-    let mut text = String::from("The other agents of this machine");
+    let mut text = String::new();
     if now.is_empty() {
-      text.push_str(" have set no status.\n");
+      text.push_str("No other agent, of this machine or its peers, has set a status.\n");
     } else {
-      text.push_str(", by their statuses:\n");
+      text.push_str(
+        "The other agents, of this machine and of its peers as `<peer>:<agent>`, by their \
+         statuses:\n",
+      );
       for (name, status) in now {
         text.push_str(&format!("- {name}: {status}\n"));
       }

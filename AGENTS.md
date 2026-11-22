@@ -20,4 +20,4 @@ The domain senses.sh is Luis's, unused for now.
   - It reads the login of the user's Claude Code where Claude Code keeps it, the macOS keychain or `.credentials.json` of its config directory, only reads it, and never stores or logs it; Claude Code renews it.
   - It asks the endpoint Claude Code shows `/usage` from, `api.anthropic.com/api/oauth/usage`, undocumented, at most every five minutes, and reads its list `limits`, classified by `kind`.
   - Claude Code tells the windows to its status line but not to hooks, and pi tells them to nothing, so the endpoint is the one source every harness shares.
-- `others`: the statuses of the other agents of the machine, the inboxes beside the agent's own, told as they change; its first look tells them all, and how to set one's own (agentinbox's "Status").
+- `others`: the statuses of the other agents of the machine, the inboxes beside the agent's own, and of its peers' agents, asked at most every five minutes, told as they change; its first look tells them all, and how to set one's own (agentinbox's "Status").
