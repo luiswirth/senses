@@ -570,7 +570,7 @@ dependencies = [
 [[package]]
 name = "mindio"
 version = "0.1.0"
-source = "git+https://github.com/luiswirth/mindio#b9585682f04e4831b1df0bd1fc9c6dd4d5b949c6"
+source = "git+https://github.com/luiswirth/mindio#eaa53599d5af8f6887092f40da4f5060a86acc4e"
 dependencies = [
  "jiff 0.2.46",
  "libc",
@@ -1055,7 +1055,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
