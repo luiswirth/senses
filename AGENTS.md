@@ -1,5 +1,5 @@
 ---
-description: "Senses: small readings that deliver what an agent perceives into its inbox, through MindIO, part of Ag² (`~/dev/agentics`). Use when working on a sense or adding one."
+description: "Senses: small readings that deliver what an agent perceives into its inbox, through MindIO, part of my agentics (`~/dev/agentics`). Use when working on a sense or adding one."
 ---
 
 # senses
