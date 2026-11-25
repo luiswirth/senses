@@ -1,5 +1,5 @@
 [package]
-name = "others"
+name = "agent-statuses"
 version.workspace = true
 edition.workspace = true
 publish.workspace = true

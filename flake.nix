@@ -60,7 +60,7 @@
     in {
       claude-usage = sense "claude-usage";
       clock = sense "clock";
-      others = sense "others";
+      agent-statuses = sense "agent-statuses";
     });
 
     devShells = forEachSystem (pkgs: {

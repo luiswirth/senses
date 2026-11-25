@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["claude-usage", "clock", "others"]
+members = ["claude-usage", "clock", "agent-statuses"]
 
 [workspace.package]
 version = "0.1.0"

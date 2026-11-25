@@ -16,7 +16,7 @@ use std::time::Duration;
 use mindio::{Kind, MindIo, all, peers};
 
 /// Who the items are from, and the name of the sense's file in the agent's IO.
-pub const SENDER: &str = "others";
+pub const SENDER: &str = "agent-statuses";
 
 /// How long what a peer listed is used before it is asked again.
 pub const PEER_AGE: Duration = Duration::from_secs(5 * 60);
@@ -82,7 +82,7 @@ pub fn describe(
   (!lines.is_empty()).then(|| format!("Other agents' statuses changed:\n{lines}"))
 }
 
-/// Delivers what changed in the others' statuses since they were last told, and says whether it
+/// Delivers what changed in the other agents' statuses since they were last told, and says whether it
 /// did. The file [`SENDER`] keeps what was told, one `<name>\t<status>` a line; a run that finds
 /// it locked leaves the telling to the run that holds it, such as for a parallel tool call.
 pub fn tell(mindio: &MindIo) -> io::Result<bool> {
