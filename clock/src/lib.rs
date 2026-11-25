@@ -1,5 +1,5 @@
 //! Tells an agent the date and time, through its inbox, once [`GAP`] has passed since it last
-//! did: the clock is outside the agent, so a reading of its inbox, while how long a step took is
+//! did: the clock is outside the agent, so a reading, while how long a step took is
 //! the harness's own.
 
 use std::{
@@ -8,10 +8,10 @@ use std::{
   os::unix::fs::OpenOptionsExt,
 };
 
-use agentinbox::Inbox;
 use jiff::{SignedDuration, Timestamp, tz::TimeZone};
+use mindio::{Kind, MindIo};
 
-/// Who the items are from, and the name of the sense's file in the inbox.
+/// Who the items are from, and the name of the sense's file in the agent's IO.
 pub const SENDER: &str = "clock";
 
 /// How much time passes before the date and time are told again.
@@ -34,15 +34,15 @@ pub fn describe(now: Timestamp, zone: &TimeZone) -> String {
 /// Delivers the date and time where [`GAP`] has passed since they were last told, and says
 /// whether it did. The file [`SENDER`] keeps when; a run that finds it locked leaves the telling
 /// to the run that holds it, such as for a parallel tool call.
-pub fn tell(inbox: &Inbox, now: Timestamp, zone: &TimeZone) -> io::Result<bool> {
-  inbox.create()?;
+pub fn tell(mindio: &MindIo, now: Timestamp, zone: &TimeZone) -> io::Result<bool> {
+  mindio.create()?;
   let mut file = fs::OpenOptions::new()
     .read(true)
     .write(true)
     .create(true)
     .truncate(false)
     .mode(0o600)
-    .open(inbox.root.join(SENDER))?;
+    .open(mindio.root.join(SENDER))?;
   match file.try_lock() {
     Ok(()) => {}
     Err(TryLockError::WouldBlock) => return Ok(false),
@@ -55,7 +55,13 @@ pub fn tell(inbox: &Inbox, now: Timestamp, zone: &TimeZone) -> io::Result<bool> 
   {
     return Ok(false);
   }
-  inbox.deliver(describe(now, zone).as_bytes(), SENDER, "txt")?;
+  mindio.deliver(
+    describe(now, zone).as_bytes(),
+    SENDER,
+    "txt",
+    Kind::Reading,
+    &[],
+  )?;
   file.set_len(0)?;
   file.seek(SeekFrom::Start(0))?;
   writeln!(file, "{now}")?;

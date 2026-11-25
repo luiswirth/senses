@@ -9,4 +9,4 @@ publish = false
 license = "MIT"
 
 [workspace.dependencies]
-agentinbox = { git = "https://github.com/luiswirth/agentinbox", default-features = false }
+mindio = { git = "https://github.com/luiswirth/mindio", default-features = false }

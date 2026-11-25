@@ -1,9 +1,10 @@
 use std::fs;
 
-use agentinbox::{Content, Inbox};
+use mindio::{Content, MindIo};
 
-fn told(inbox: &Inbox) -> Vec<String> {
-  inbox
+fn told(mindio: &MindIo) -> Vec<String> {
+  mindio
+    .inbox()
     .take()
     .unwrap()
     .into_iter()
@@ -20,9 +21,9 @@ fn the_others_statuses_are_told_as_they_change() {
   let _ = fs::remove_dir_all(&dir);
   // No peers of the user's.
   unsafe { std::env::set_var("XDG_CONFIG_HOME", dir.join("config")) };
-  let me = Inbox::new(dir.join("me"));
-  let lead = Inbox::new(dir.join("lead"));
-  let fixer = Inbox::new(dir.join("fixer"));
+  let me = MindIo::new(dir.join("me"));
+  let lead = MindIo::new(dir.join("lead"));
+  let fixer = MindIo::new(dir.join("fixer"));
   me.set_status("my own, never told").unwrap();
   lead.set_status("planning the week").unwrap();
 

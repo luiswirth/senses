@@ -1,4 +1,4 @@
-//! Tells an agent the statuses of the other agents of its machine, the inboxes beside its own,
+//! Tells an agent the statuses of the other agents of its machine, the agents beside it,
 //! and of its peers' agents, as they change, so that it learns unasked who works where it does:
 //! each status set, changed or cleared since it was last told. The first look tells them all,
 //! and how to set one's own. A peer is asked at most every [`PEER_AGE`], since a look is taken
@@ -13,22 +13,22 @@ use std::{
 
 use std::time::Duration;
 
-use agentinbox::{Inbox, inboxes, peers};
+use mindio::{Kind, MindIo, all, peers};
 
-/// Who the items are from, and the name of the sense's file in the inbox.
+/// Who the items are from, and the name of the sense's file in the agent's IO.
 pub const SENDER: &str = "others";
 
 /// How long what a peer listed is used before it is asked again.
 pub const PEER_AGE: Duration = Duration::from_secs(5 * 60);
 
 /// The statuses of the agents beside this one and of the peers' agents, by name.
-pub fn statuses(inbox: &Inbox) -> io::Result<BTreeMap<String, String>> {
+pub fn statuses(mindio: &MindIo) -> io::Result<BTreeMap<String, String>> {
   let mut statuses = BTreeMap::new();
-  let Some(dir) = inbox.root.parent() else {
+  let Some(dir) = mindio.root.parent() else {
     return Ok(statuses);
   };
-  let own = inbox.name();
-  for other in inboxes(dir)? {
+  let own = mindio.name();
+  for other in all(dir)? {
     let name = other.name();
     if name != own
       && let Some(status) = other.status()?
@@ -65,8 +65,8 @@ pub fn describe(
       }
     }
     text.push_str(
-      "Their statuses are told here as they change. `agentinbox status <text>` sets yours, one \
-       line on what you are doing and where, and `agentinbox agents` lists them all.\n",
+      "Their statuses are told here as they change. `mindio status <text>` sets yours, one \
+       line on what you are doing and where, and `mindio agents` lists them all.\n",
     );
     return Some(text);
   };
@@ -85,9 +85,9 @@ pub fn describe(
 /// Delivers what changed in the others' statuses since they were last told, and says whether it
 /// did. The file [`SENDER`] keeps what was told, one `<name>\t<status>` a line; a run that finds
 /// it locked leaves the telling to the run that holds it, such as for a parallel tool call.
-pub fn tell(inbox: &Inbox) -> io::Result<bool> {
-  inbox.create()?;
-  let path = inbox.root.join(SENDER);
+pub fn tell(mindio: &MindIo) -> io::Result<bool> {
+  mindio.create()?;
+  let path = mindio.root.join(SENDER);
   let first = !path.exists();
   let mut file = fs::OpenOptions::new()
     .read(true)
@@ -108,11 +108,11 @@ pub fn tell(inbox: &Inbox) -> io::Result<bool> {
     .filter_map(|line| line.split_once('\t'))
     .map(|(name, status)| (name.to_string(), status.to_string()))
     .collect();
-  let now = statuses(inbox)?;
+  let now = statuses(mindio)?;
   let Some(news) = describe((!first).then_some(&told), &now) else {
     return Ok(false);
   };
-  inbox.deliver(news.as_bytes(), SENDER, "txt")?;
+  mindio.deliver(news.as_bytes(), SENDER, "txt", Kind::Reading, &[])?;
   file.set_len(0)?;
   file.seek(SeekFrom::Start(0))?;
   for (name, status) in &now {

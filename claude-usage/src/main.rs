@@ -1,7 +1,7 @@
-//! `claude-usage`: tells the agent of `AGENT_INBOX` how much of its Claude subscription's usage
-//! limits is used, as a quiet item, where a limit crossed a tenth since it was last told, either
-//! way. Its inbox's take runs it at each step: it asks the endpoint at most once in `FRESH`, and does
-//! nothing without `AGENT_INBOX` or a Claude Code login.
+//! `claude-usage`: tells the agent of `MINDIO` how much of its Claude subscription's usage
+//! limits is used, where a limit crossed a tenth since it was last told, either
+//! way. MindIO's take runs it, as a reading, at each step: it asks the endpoint at most once in `FRESH`, and does
+//! nothing without `MINDIO` or a Claude Code login.
 
 use std::{
   env,
@@ -13,13 +13,13 @@ use std::{
   process::ExitCode,
 };
 
-use agentinbox::Inbox;
 use claude_usage::{FRESH, SENDER, State, ask, tell, token};
 use jiff::{Timestamp, tz::TimeZone};
+use mindio::{Kind, MindIo};
 
 fn main() -> ExitCode {
   if env::args().len() > 1 {
-    eprintln!("usage: claude-usage, with AGENT_INBOX set; it takes no arguments");
+    eprintln!("usage: claude-usage, with MINDIO set; it takes no arguments");
     return ExitCode::FAILURE;
   }
   match run() {
@@ -32,17 +32,17 @@ fn main() -> ExitCode {
 }
 
 fn run() -> Result<(), Box<dyn Error>> {
-  let Some(inbox) = env::var_os("AGENT_INBOX").map(|root| Inbox::new(PathBuf::from(root))) else {
+  let Some(mindio) = env::var_os("MINDIO").map(|root| MindIo::new(PathBuf::from(root))) else {
     return Ok(());
   };
-  inbox.create()?;
+  mindio.create()?;
   let mut file = fs::OpenOptions::new()
     .read(true)
     .write(true)
     .create(true)
     .truncate(false)
     .mode(0o600)
-    .open(inbox.root.join(SENDER))?;
+    .open(mindio.root.join(SENDER))?;
   // A run that holds the lock is asking already, such as for a parallel tool call.
   match file.try_lock() {
     Ok(()) => {}
@@ -70,7 +70,7 @@ fn run() -> Result<(), Box<dyn Error>> {
   let usage = ask(&token)?;
   let text = tell(&mut state.told, &usage, &TimeZone::system());
   if !text.is_empty() {
-    inbox.deliver(text.as_bytes(), SENDER, "txt")?;
+    mindio.deliver(text.as_bytes(), SENDER, "txt", Kind::Reading, &[])?;
   }
   save(&mut file, &state)
 }

@@ -6,5 +6,5 @@ publish.workspace = true
 license.workspace = true
 
 [dependencies]
-agentinbox.workspace = true
+mindio.workspace = true
 jiff = "1"

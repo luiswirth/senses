@@ -12,7 +12,7 @@ use jiff::{Timestamp, Unit, tz::TimeZone};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
-/// Who the items are from, and the name of the sense's file in the inbox.
+/// Who the items are from, and the name of the sense's file in the agent's IO.
 pub const SENDER: &str = "claude-usage";
 
 /// How long a reading stays fresh: the endpoint is asked at most once in this time.
@@ -21,7 +21,7 @@ pub const FRESH: Duration = Duration::from_secs(5 * 60);
 /// The endpoint Claude Code reads its `/usage` from. It is undocumented.
 const ENDPOINT: &str = "https://api.anthropic.com/api/oauth/usage";
 
-/// What the sense keeps in the inbox between runs.
+/// What the sense keeps in the agent's IO between runs.
 #[derive(Debug, Default, Serialize, Deserialize)]
 pub struct State {
   /// When the endpoint was last asked.

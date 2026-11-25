@@ -9,18 +9,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
-name = "agentinbox"
-version = "0.1.0"
-source = "git+https://github.com/luiswirth/agentinbox#70c97ed22d5008f13d1147a5b20fb48bd97e0b60"
-dependencies = [
- "jiff 0.2.46",
- "libc",
- "mime2ext",
- "mime_guess",
- "notify",
-]
-
-[[package]]
 name = "base64"
 version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -67,8 +55,8 @@ checksum = "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
 name = "claude-usage"
 version = "0.1.0"
 dependencies = [
- "agentinbox",
  "jiff 1.0.0",
+ "mindio",
  "serde",
  "serde_json",
  "sha2",
@@ -79,8 +67,8 @@ dependencies = [
 name = "clock"
 version = "0.1.0"
 dependencies = [
- "agentinbox",
  "jiff 1.0.0",
+ "mindio",
 ]
 
 [[package]]
@@ -573,6 +561,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "mindio"
+version = "0.1.0"
+source = "git+https://github.com/luiswirth/mindio#b9585682f04e4831b1df0bd1fc9c6dd4d5b949c6"
+dependencies = [
+ "jiff 0.2.46",
+ "libc",
+ "mime2ext",
+ "mime_guess",
+ "notify",
+]
+
+[[package]]
 name = "miniz_oxide"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -657,7 +657,7 @@ checksum = "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50"
 name = "others"
 version = "0.1.0"
 dependencies = [
- "agentinbox",
+ "mindio",
 ]
 
 [[package]]
@@ -1055,7 +1055,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
